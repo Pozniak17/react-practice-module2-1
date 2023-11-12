@@ -1,7 +1,6 @@
 import { Component } from 'react';
-import { Button, MetaWrapper, Text, Topic, Wrapper } from './QuizCard.styled';
-import { Modal } from 'components/Modal/ModalBase';
 import { TopicModal } from 'components/TopicModal/TopicModal';
+import { Button, MetaWrapper, Text, Topic, Wrapper } from './QuizCard.styled';
 
 export class QuizCard extends Component {
   state = {
@@ -39,6 +38,7 @@ export class QuizCard extends Component {
         </MetaWrapper>
         <Button onClick={() => onDelete(id)}>Delete</Button>
         {/* {isModalOpen && <h1 onClick={this.closeModal}>MODAL!!! - {topic}</h1>} */}
+
         <TopicModal
           isOpen={isModalOpen}
           onClose={this.closeModal}
