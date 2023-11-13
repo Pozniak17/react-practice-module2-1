@@ -1,12 +1,12 @@
-// import { Basics } from 'Basics';
 import { Component } from 'react';
-import { nanoid } from 'nanoid';
+import toast, { Toaster } from 'react-hot-toast';
+import { Bars } from 'react-loader-spinner';
 import { QuizForm } from './QuizForm/QuizForm';
 import { SearchBar } from './SearchBar/SearchBar';
 import { QuizList } from './QuizList/QuizList';
 import { Layout } from './Layout';
 import { GlobalStyle } from './GlobalStyle';
-import initialQuizItems from './json/quiz-items.json';
+import { addNewQuiz, deleteQuizById, fetchQuizzes } from './utils/api';
 
 const initialFilters = {
   topic: '',
@@ -17,15 +17,26 @@ const storageKey = 'quiz-filters';
 
 export class App extends Component {
   state = {
-    quizItems: initialQuizItems,
+    quizItems: [],
+    isLoading: false,
+    error: false,
     filters: initialFilters,
   };
 
   // якщо в localStorage не null, приводимо до об'єкта і записуємо в state.
-  componentDidMount() {
+  async componentDidMount() {
     const savedFilters = window.localStorage.getItem(storageKey);
     if (savedFilters !== null) {
       this.setState({ filters: JSON.parse(savedFilters) });
+    }
+    try {
+      this.setState({ isLoading: true, error: false });
+      const initialQuizzes = await fetchQuizzes();
+      this.setState({ quizItems: initialQuizzes });
+    } catch (error) {
+      this.setState({ error: true });
+    } finally {
+      this.setState({ isLoading: false });
     }
   }
   // якщо змінюється level або topic - записати в LS
@@ -74,25 +85,54 @@ export class App extends Component {
   };
 
   // Якщо не співпадає ід, то повернути.
-  deleteQuiz = quizId => {
-    this.setState(prevState => {
-      return {
-        quizItems: prevState.quizItems.filter(item => item.id !== quizId),
-      };
-    });
+  deleteQuiz = async quizId => {
+    try {
+      this.setState({ isLoading: true, error: false });
+      const deletedQuiz = await deleteQuizById(quizId);
+      this.setState(prevState => ({
+        quizItems: prevState.quizItems.filter(
+          item => item.id !== deletedQuiz.id
+        ),
+      }));
+    } catch (error) {
+      toast.error('ERROR DELETING QUIZ!');
+    } finally {
+      this.setState({ isLoading: false });
+    }
+    // this.setState(prevState => {
+    //   return {
+    //     quizItems: prevState.quizItems.filter(item => item.id !== quizId),
+    //   };
+    // });
   };
 
-  addQUiz = newQuiz => {
-    const quiz = { ...newQuiz, id: nanoid() };
-    this.setState(prevState => {
-      return {
-        quizItems: [...prevState.quizItems, quiz],
-      };
-    });
+  // додаємо, після того як дочекалися відповіді від бекенду
+  addQUiz = async newQuiz => {
+    try {
+      this.setState({ isLoading: true, error: false });
+      const addedQuiz = await addNewQuiz(newQuiz);
+      this.setState(prevState => ({
+        quizItems: [...prevState.quizItems, addedQuiz],
+      }));
+    } catch (error) {
+      this.setState({ error: true });
+      toast.error('ERROR ADDING QUIZ!');
+    } finally {
+      this.setState({ isLoading: false });
+    }
   };
+
+  //   const quiz = { ...newQuiz, id: nanoid() };
+
+  //   this.setState(prevState => {
+  //     return {
+  //       quizItems: [...prevState.quizItems, quiz],
+  //     };
+  //   });
+  // };
 
   render() {
-    const { quizItems, filters } = this.state;
+    const { quizItems, filters, isLoading, error } = this.state;
 
     // множинна фільтрація по топіку і по селекту
     const visibleQuizItems = quizItems.filter(item => {
@@ -117,10 +157,25 @@ export class App extends Component {
           onUpdateLevel={this.updateLevelFilter}
           onReset={this.resetFilter}
         />
+        {isLoading && (
+          <Bars
+            height="80"
+            width="80"
+            color="#4fa94d"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        )}
+        {error && (
+          <b>Oops! Something went wrong! Please try reloading this page!😔</b>
+        )}
         {visibleQuizItems.length > 0 && (
           <QuizList items={visibleQuizItems} onDelete={this.deleteQuiz} />
         )}
         <GlobalStyle />
+        <Toaster />
       </Layout>
     );
   }

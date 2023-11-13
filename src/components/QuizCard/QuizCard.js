@@ -21,7 +21,7 @@ export class QuizCard extends Component {
 
     return (
       <Wrapper level={level}>
-        <Topic onClick={this.openModal}>{topic}</Topic>
+        <Topic>{topic}</Topic>
         <MetaWrapper>
           <Text>
             <b>Level:</b>
@@ -36,7 +36,10 @@ export class QuizCard extends Component {
             {questions}
           </Text>
         </MetaWrapper>
-        <Button onClick={() => onDelete(id)}>Delete</Button>
+        <div>
+          <Button onClick={() => onDelete(id)}>Delete</Button>
+          <Button onClick={this.openModal}>Edit</Button>
+        </div>
         {/* {isModalOpen && <h1 onClick={this.closeModal}>MODAL!!! - {topic}</h1>} */}
 
         <TopicModal
