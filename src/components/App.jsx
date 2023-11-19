@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Bars } from 'react-loader-spinner';
 import { QuizForm } from './QuizForm/QuizForm';
@@ -15,168 +15,95 @@ const initialFilters = {
 
 const storageKey = 'quiz-filters';
 
-export class App extends Component {
-  state = {
-    quizItems: [],
-    isLoading: false,
-    error: false,
-    filters: initialFilters,
-  };
+export const App = () => {
+  const [quizItems, setQuizItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [filters, setFilters] = useState(initialFilters);
 
-  // якщо в localStorage не null, приводимо до об'єкта і записуємо в state.
-  async componentDidMount() {
-    const savedFilters = window.localStorage.getItem(storageKey);
-    if (savedFilters !== null) {
-      this.setState({ filters: JSON.parse(savedFilters) });
-    }
+  // додаємо, після того як дочекалися відповіді від бекенду
+  const addQuiz = async newQuiz => {
     try {
-      this.setState({ isLoading: true, error: false });
-      const initialQuizzes = await fetchQuizzes();
-      this.setState({ quizItems: initialQuizzes });
+      setIsLoading(true);
+      error(false);
+      const addedQuiz = await addNewQuiz(newQuiz);
+      // this.setState(prevState => ({
+      //   quizItems: [...prevState.quizItems, addedQuiz],
+      // }));
+      setQuizItems(prevItems => [...prevItems, addedQuiz]);
     } catch (error) {
-      this.setState({ error: true });
+      setError(true);
+      toast.error('ERROR ADDING QUIZ!');
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
-  }
-  // якщо змінюється level або topic - записати в LS
-  // якщо об'єкт фільтра з попереднього рендеру на поточний - змінився,
-  // записати в LS. було ось так
-  // prevState.filters.level !== this.state.filters ||
-  // prevState.filters.topic !== this.state.filters.topic
-  // те саме, різні посилання
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.filters !== this.state.filters) {
-      window.localStorage.setItem(
-        storageKey,
-        JSON.stringify(this.state.filters)
-      );
-    }
-  }
-
-  // для зміни фільтру
-  updateTopicFilter = newTopic => {
-    this.setState(prevState => {
-      return {
-        filters: {
-          ...prevState.filters,
-          topic: newTopic,
-        },
-      };
-    });
-  };
-
-  //для зміни селекту
-  updateLevelFilter = newLevel => {
-    this.setState(prevState => {
-      return {
-        filters: {
-          ...prevState.filters,
-          level: newLevel,
-        },
-      };
-    });
-  };
-
-  resetFilter = () => {
-    this.setState({
-      filters: initialFilters,
-    });
   };
 
   // Якщо не співпадає ід, то повернути.
-  deleteQuiz = async quizId => {
+  const deleteQuiz = async quizId => {
     try {
-      this.setState({ isLoading: true, error: false });
+      setIsLoading(true);
+      setError(error);
       const deletedQuiz = await deleteQuizById(quizId);
-      this.setState(prevState => ({
-        quizItems: prevState.quizItems.filter(
-          item => item.id !== deletedQuiz.id
-        ),
-      }));
+
+      setQuizItems(prevItems =>
+        prevItems.filter(item => item.id !== deleteQuiz.id)
+      );
+      // this.setState(prevState => ({
+      //   quizItems: prevState.quizItems.filter(
+      //     item => item.id !== deletedQuiz.id
+      //   ),
+      // }));
     } catch (error) {
       toast.error('ERROR DELETING QUIZ!');
     } finally {
-      this.setState({ isLoading: false });
-    }
-    // this.setState(prevState => {
-    //   return {
-    //     quizItems: prevState.quizItems.filter(item => item.id !== quizId),
-    //   };
-    // });
-  };
-
-  // додаємо, після того як дочекалися відповіді від бекенду
-  addQUiz = async newQuiz => {
-    try {
-      this.setState({ isLoading: true, error: false });
-      const addedQuiz = await addNewQuiz(newQuiz);
-      this.setState(prevState => ({
-        quizItems: [...prevState.quizItems, addedQuiz],
-      }));
-    } catch (error) {
-      this.setState({ error: true });
-      toast.error('ERROR ADDING QUIZ!');
-    } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
 
-  //   const quiz = { ...newQuiz, id: nanoid() };
+  // множинна фільтрація по топіку і по селекту
+  const visibleQuizItems = quizItems.filter(item => {
+    const hasTopic = item.topic
+      .toLowerCase()
+      .includes(filters.topic.toLowerCase());
 
-  //   this.setState(prevState => {
-  //     return {
-  //       quizItems: [...prevState.quizItems, quiz],
-  //     };
-  //   });
-  // };
+    if (filters.level === 'all') {
+      return hasTopic;
+    }
 
-  render() {
-    const { quizItems, filters, isLoading, error } = this.state;
+    const matchesLevel = item.level === filters.level;
+    return hasTopic && matchesLevel;
+  });
 
-    // множинна фільтрація по топіку і по селекту
-    const visibleQuizItems = quizItems.filter(item => {
-      const hasTopic = item.topic
-        .toLowerCase()
-        .includes(filters.topic.toLowerCase());
-
-      if (filters.level === 'all') {
-        return hasTopic;
-      }
-
-      const matchesLevel = item.level === filters.level;
-      return hasTopic && matchesLevel;
-    });
-    return (
-      <Layout>
-        {/* <Basics /> */}
-        <QuizForm onAdd={this.addQUiz} />
-        <SearchBar
-          filters={filters}
-          onUpdateTopic={this.updateTopicFilter}
-          onUpdateLevel={this.updateLevelFilter}
-          onReset={this.resetFilter}
+  return (
+    <Layout>
+      {/* <Basics /> */}
+      <QuizForm onAdd={addQuiz} />
+      <SearchBar
+        filters={filters}
+        onUpdateTopic={this.updateTopicFilter}
+        onUpdateLevel={this.updateLevelFilter}
+        onReset={this.resetFilter}
+      />
+      {isLoading && (
+        <Bars
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="bars-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
         />
-        {isLoading && (
-          <Bars
-            height="80"
-            width="80"
-            color="#4fa94d"
-            ariaLabel="bars-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-          />
-        )}
-        {error && (
-          <b>Oops! Something went wrong! Please try reloading this page!😔</b>
-        )}
-        {visibleQuizItems.length > 0 && (
-          <QuizList items={visibleQuizItems} onDelete={this.deleteQuiz} />
-        )}
-        <GlobalStyle />
-        <Toaster />
-      </Layout>
-    );
-  }
-}
+      )}
+      {error && (
+        <b>Oops! Something went wrong! Please try reloading this page!😔</b>
+      )}
+      {visibleQuizItems.length > 0 && (
+        <QuizList items={visibleQuizItems} onDelete={deleteQuiz} />
+      )}
+      <GlobalStyle />
+      <Toaster />
+    </Layout>
+  );
+};
