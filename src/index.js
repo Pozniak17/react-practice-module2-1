@@ -4,11 +4,14 @@ import { App } from 'components/App';
 import './index.css';
 import { ThemeProvider } from 'styled-components';
 import { theme } from 'components/utils/theme';
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <BrowserRouter basename="/react-practice-module2-1">
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
