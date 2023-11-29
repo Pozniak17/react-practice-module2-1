@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Bars } from 'react-loader-spinner';
 import { QuizForm } from './QuizForm/QuizForm';
@@ -121,18 +121,21 @@ export const App = () => {
   };
 
   // множинна фільтрація по топіку і по селекту
-  const visibleQuizItems = quizItems.filter(item => {
-    const hasTopic = item.topic
-      .toLowerCase()
-      .includes(filters.topic.toLowerCase());
+  // при зміні isLoading, error - ця логіка не перерендериться, завдяки useMemo
+  const visibleQuizItems = useMemo(() => {
+    quizItems.filter(item => {
+      const hasTopic = item.topic
+        .toLowerCase()
+        .includes(filters.topic.toLowerCase());
 
-    if (filters.level === 'all') {
-      return hasTopic;
-    }
+      if (filters.level === 'all') {
+        return hasTopic;
+      }
 
-    const matchesLevel = item.level === filters.level;
-    return hasTopic && matchesLevel;
-  });
+      const matchesLevel = item.level === filters.level;
+      return hasTopic && matchesLevel;
+    });
+  }, [quizItems, filters]);
 
   return (
     <Layout>
