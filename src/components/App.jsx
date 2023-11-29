@@ -18,20 +18,18 @@ const storageKey = 'quiz-filters';
 // ця функція буде викликана до монтування - синхронно. А всі useEffect - запускаються асинхронно.
 const getInitialFilters = () => {
   const savedFilters = window.localStorage.getItem(storageKey);
-  if (savedFilters !== null) {
-    return JSON.parse(savedFilters);
-  }
-  return initialFilters;
+  // if (savedFilters !== null) {
+  //   return JSON.parse(savedFilters);
+  // }
+  // return initialFilters;
   // через тернарний оператор
-  // return savedFilters !== null ? JSON.parse(savedFilters) : initialFilters;
+  return savedFilters !== null ? JSON.parse(savedFilters) : initialFilters;
 };
 
 export const App = () => {
   const [quizItems, setQuizItems] = useState([]);
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-
   const [filters, setFilters] = useState(getInitialFilters);
 
   // ефект - аналог componentDidMount та в ньому HTTP-запит.
@@ -122,20 +120,33 @@ export const App = () => {
 
   // множинна фільтрація по топіку і по селекту
   // при зміні isLoading, error - ця логіка не перерендериться, завдяки useMemo
-  const visibleQuizItems = useMemo(() => {
-    quizItems.filter(item => {
-      const hasTopic = item.topic
-        .toLowerCase()
-        .includes(filters.topic.toLowerCase());
+  // const visibleQuizItems = useMemo(() => {
+  //   quizItems.filter(item => {
+  //     const hasTopic = item.topic
+  //       .toLowerCase()
+  //       .includes(filters.topic.toLowerCase());
 
-      if (filters.level === 'all') {
-        return hasTopic;
-      }
+  //     if (filters.level === 'all') {
+  //       return hasTopic;
+  //     }
 
-      const matchesLevel = item.level === filters.level;
-      return hasTopic && matchesLevel;
-    });
-  }, [quizItems, filters]);
+  //     const matchesLevel = item.level === filters.level;
+  //     return hasTopic && matchesLevel;
+  //   });
+  // }, [quizItems, filters]);
+
+  const visibleQuizItems = quizItems.filter(item => {
+    const hasTopic = item.topic
+      .toLowerCase()
+      .includes(filters.topic.toLowerCase());
+
+    if (filters.level === 'all') {
+      return hasTopic;
+    }
+
+    const matchesLevel = item.level === filters.level;
+    return hasTopic && matchesLevel;
+  });
 
   return (
     <Layout>
