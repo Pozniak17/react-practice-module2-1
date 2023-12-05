@@ -135,18 +135,18 @@
 //     const { quizItems, filters, isLoading, error } = this.state;
 
 //     // множинна фільтрація по топіку і по селекту
-//     const visibleQuizItems = quizItems.filter(item => {
-//       const hasTopic = item.topic
-//         .toLowerCase()
-//         .includes(filters.topic.toLowerCase());
+// const visibleQuizItems = quizItems.filter(item => {
+//   const hasTopic = item.topic
+//     .toLowerCase()
+//     .includes(filters.topic.toLowerCase());
 
-//       if (filters.level === 'all') {
-//         return hasTopic;
-//       }
+//   if (filters.level === 'all') {
+//     return hasTopic;
+//   }
 
-//       const matchesLevel = item.level === filters.level;
-//       return hasTopic && matchesLevel;
-//     });
+//   const matchesLevel = item.level === filters.level;
+//   return hasTopic && matchesLevel;
+// });
 //     return (
 //       <Layout>
 //         {/* <Basics /> */}

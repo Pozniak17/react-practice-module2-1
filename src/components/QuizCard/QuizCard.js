@@ -1,6 +1,7 @@
-import { TopicModal } from 'components/TopicModal/TopicModal';
-import { Button, MetaWrapper, Text, Topic, Wrapper } from './QuizCard.styled';
 import { useState } from 'react';
+import { TopicModal } from 'components/TopicModal/TopicModal';
+import { Topic, Wrapper, MetaWrapper, Text, Button } from './QuizCard.styled';
+import { Link } from 'react-router-dom';
 
 export const QuizCard = ({
   quiz: { id, topic, level, time, questions },
@@ -16,27 +17,24 @@ export const QuizCard = ({
 
   return (
     <Wrapper level={level}>
-      <Topic>{topic}</Topic>
+      <Link to={`/list/${id}`}>
+        <Topic>{topic}</Topic>
+      </Link>
       <MetaWrapper>
         <Text>
-          <b>Level:</b>
-          {level}
+          <b>Level:</b> {level}
         </Text>
         <Text>
-          <b>Time:</b>
-          {time}
+          <b>Time:</b> {time}
         </Text>
         <Text>
-          <b>Questions:</b>
-          {questions}
+          <b>Questions:</b> {questions}
         </Text>
       </MetaWrapper>
       <div>
         <Button onClick={deleteCard}>Delete</Button>
         <Button onClick={openModal}>Edit</Button>
       </div>
-      {/* {isModalOpen && <h1 onClick={this.closeModal}>MODAL!!! - {topic}</h1>} */}
-
       <TopicModal isOpen={isModalOpen} onClose={closeModal} topic={topic} />
     </Wrapper>
   );
