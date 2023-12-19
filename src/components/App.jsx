@@ -1,14 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import CreateQuizPage from './pages/CreateQuizPage';
 import QuizzesPage from './pages/QuizzesPage';
+import CreateQuizPage from './pages/CreateQuizPage';
 import QuizDetailsPage from './pages/QuizDetailsPage';
 import NotFoundPage from './pages/NotFoundPage';
-import { AppLayout } from './AppLayout';
+import AppLayout from './AppLayout';
 
 export const App = () => {
   return (
-    // список марштутів
     <Routes>
       <Route path="/" element={<AppLayout />}>
         <Route index element={<HomePage />} />

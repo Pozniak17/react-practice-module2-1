@@ -1,6 +1,6 @@
 import { QuizForm } from 'components/QuizForm/QuizForm';
-import { addNewQuiz } from 'components/utils/api';
 import { useState } from 'react';
+import { addNewQuiz } from 'components/utils/api';
 import toast from 'react-hot-toast';
 
 export default function CreateQuizPage() {

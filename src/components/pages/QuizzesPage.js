@@ -1,9 +1,9 @@
+import toast from 'react-hot-toast';
+import { deleteQuizById, fetchQuizzes } from 'components/utils/api';
 import { useEffect, useState } from 'react';
 import { Bars } from 'react-loader-spinner';
-import toast from 'react-hot-toast';
 import { QuizList } from 'components/QuizList/QuizList';
 import { SearchBar } from 'components/SearchBar/SearchBar';
-import { deleteQuizById, fetchQuizzes } from 'components/utils/api';
 
 const initialFilters = {
   topic: '',
@@ -12,6 +12,7 @@ const initialFilters = {
 
 const storageKey = 'quiz-filters';
 
+// фільтрація
 const getInitialFilters = () => {
   const savedFilters = window.localStorage.getItem(storageKey);
   return savedFilters !== null ? JSON.parse(savedFilters) : initialFilters;

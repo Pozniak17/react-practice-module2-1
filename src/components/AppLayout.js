@@ -1,9 +1,9 @@
+import { NavLink, Outlet } from 'react-router-dom';
+import { Layout } from './Layout';
 import { GlobalStyle } from './GlobalStyle';
 import { Toaster } from 'react-hot-toast';
-import { Layout } from './Layout';
-import { NavLink, Outlet } from 'react-router-dom';
 
-export const AppLayout = () => {
+export default function AppLayout() {
   return (
     <Layout>
       <header>
@@ -12,24 +12,26 @@ export const AppLayout = () => {
             <li>
               <NavLink to="/">Home</NavLink>
             </li>
+
             <li>
               <NavLink to="/create">Create</NavLink>
             </li>
+
             <li>
-              <NavLink to="/list">Quiz List</NavLink>
+              <NavLink to="/list">Quiz list</NavLink>
             </li>
           </ul>
         </nav>
       </header>
 
-      {/* список маршрутів */}
       <main>
         <Outlet />
       </main>
 
       <footer>FOOTER</footer>
+
       <GlobalStyle />
       <Toaster />
     </Layout>
   );
-};
+}
