@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TopicModal } from 'components/TopicModal/TopicModal';
+import { TopicModal } from '../TopicModal/TopicModal';
 import { Topic, Wrapper, MetaWrapper, Text, Button } from './QuizCard.styled';
 import { Link } from 'react-router-dom';
 

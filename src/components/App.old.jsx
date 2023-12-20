@@ -107,7 +107,7 @@ export class App extends Component {
   };
 
   // додаємо, після того як дочекалися відповіді від бекенду
-  addQUiz = async newQuiz => {
+  addQuiz = async newQuiz => {
     try {
       this.setState({ isLoading: true, error: false });
       const addedQuiz = await addNewQuiz(newQuiz);
@@ -150,7 +150,7 @@ export class App extends Component {
     return (
       <Layout>
         {/* <Basics /> */}
-        <QuizForm onAdd={this.addQUiz} />
+        <QuizForm onAdd={this.addQuiz} />
         <SearchBar
           filters={filters}
           onUpdateTopic={this.updateTopicFilter}

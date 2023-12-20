@@ -1,10 +1,11 @@
 import { QuizForm } from 'components/QuizForm/QuizForm';
-import { useState } from 'react';
 import { addNewQuiz } from 'components/utils/api';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function CreateQuizPage() {
   const [isLoading, setIsLoading] = useState(false);
+  //   const [error, setError] = useState(false);
 
   const addQuiz = async newQuiz => {
     try {
